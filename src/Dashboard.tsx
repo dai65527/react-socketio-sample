@@ -8,6 +8,8 @@ import Chip from "@material-ui/core/Chip";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 
+import { CTX } from "./Store";
+
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: "50px",
@@ -40,25 +42,40 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function Dashboard() {
   const classes = useStyles();
 
-  const [textValue, changeTextValue] = React.useState("")
+  // CTX store
+  const allChats = React.useContext(CTX);
+
+  console.log({ allChats });
+
+  const topics = Object.keys(allChats);
+
+  // local state
+  const [activeTopic, changeActivetTopic] = React.useState(topics[0]);
+  const [textValue, changeTextValue] = React.useState("");
 
   return (
     <div>
       <Paper className={classes.root}>
         <h1>Chat app</h1>
-        <p>Topic Placeholder</p>
+        <p>{activeTopic}</p>
         <div className={classes.flex}>
           <div className={classes.topicsWindow}>
             <List>
-              {["topic"].map((topic) => (
-                <ListItem key={topic} button>
+              {topics.map((topic) => (
+                <ListItem
+                  onClick={() => {
+                    changeActivetTopic(topic);
+                  }}
+                  key={topic}
+                  button
+                >
                   <ListItemText primary={topic} />
                 </ListItem>
               ))}
             </List>
           </div>
           <div className={classes.chatWindow}>
-            {[{ from: "user", msg: "hello" }].map((chat, i) => (
+            {allChats[activeTopic].map((chat, i) => (
               <div className={classes.flex} key={i}>
                 <Chip label={chat.from} className={classes.chip} />
                 <p>{chat.msg}</p>
@@ -78,7 +95,7 @@ export default function Dashboard() {
           </Button>
         </div>
       </Paper>
-          <p>{textValue}</p>
+      <p>{textValue}</p>
     </div>
   );
 }
